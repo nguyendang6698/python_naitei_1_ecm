@@ -10,7 +10,13 @@
 					</ul>
 					<ul class="header-links pull-right">
 						<li><a href="#"><i class="fa fa-dollar"></i> VND</a></li>
-						<li><a href="#"><i class="fa fa-user-o"></i> Tai Khoan Cua Toi</a></li>
+						{% if user.is_authenticated %}
+							<li><a href="{% url 'user-profile' %}"><i class="fa fa-user-o"></i>{{user}}</a></li>
+							<li><a href="{% url 'user-logout' %}"><i class="fa fa-sign-out"></i> Dang xuat</a></li>
+						{% else %}
+							<li><a href="{% url 'user-login' %}"><i class="fa fa-user-o"></i> Dang nhap </a></li>
+							<li><a href="{% url 'user-register' %}"><i class="fa fa-user-plus"></i> Dang ki </a></li>
+						{% endif %}
 					</ul>
 				</div>
 			</div>
