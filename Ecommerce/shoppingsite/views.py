@@ -4,6 +4,8 @@ from django.contrib import messages
 from django.http import HttpResponse
 from .forms import SignupForm
 from django.contrib.auth.decorators import login_required
+from django.views import generic
+from .models import Product, Customer, Order, OrderDetail, Comment, Category
 
 # Create your views here.
 
@@ -26,3 +28,11 @@ def register(request):
 @login_required(login_url='/shoppingsite/login/')
 def profile(request):
     return render(request, 'user/profile.html')
+
+class StoreView(generic.ListView):
+    model = Product
+    template_name = 'shoppingsite/store.html'
+    paginate_by = 16
+
+class ProductDetailView(generic.DetailView):
+    model = Product
