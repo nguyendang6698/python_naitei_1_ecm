@@ -1,0 +1,19 @@
+{% extends 'shoppingsite/base.html' %}
+{% load crispy_forms_tags %}
+{% block content %}
+    <div class="content-section">
+        <form method="POST">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4"><strong>Dang nhap</strong></legend>
+                {{ form|crispy }}
+            </fieldset>
+            <div class="form-group">
+                <button class="btn btn-primary" type="submit">Dang nhap</button>
+            </div>
+        </form>
+        <div class="border-top pt-3">
+            <small class="text-muted">Ban chua co tai khoan?<a class="ml-2" href="{% url 'user-register' %}">Dang Ki</a></small>
+        </div>
+    </div>
+{% endblock %}
