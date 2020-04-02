@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from django.urls import reverse
 # Create your models here.
 
 class Category(models.Model):
@@ -22,6 +23,12 @@ class Product(models.Model):
     def __str__(self):
         return self.name
 
+    def get_add_to_cart_url(self):
+        return reverse('add-to-cart', args=[str(self.id)])
+    
+    def get_remove_from_cart_url(self):
+        return reverse('remove-from-cart', args=[str(self.id)])
+
 class Customer(AbstractUser):
     address = models.CharField(max_length=500, help_text='Input your address.')
     country = models.CharField(max_length=500, help_text='Input your country.')
@@ -41,7 +48,8 @@ class Order(models.Model):
     ammount = models.IntegerField(default = 0)      # Tong so tien
     shipping_address = models.CharField(max_length=500, help_text='Input address.')
     order_date = models.DateTimeField(auto_now_add=True)
-
+    # ordered = models.BooleanField(default= False)
+    
     STATUS = (
         ('a', 'accept'),
         ('p', 'pending'),
@@ -56,10 +64,19 @@ class Order(models.Model):
         blank=True
     )
 
+    def __str__(self):
+        return f'{self.customer.username}, {self.order_date.date()}'
+
+    def display_order_detail(self):
+        return self.orderdetail_set.all()
+
 
 class OrderDetail(models.Model):    # Chi tiet 1 item trong gio hang
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     item = models.ForeignKey(Product, on_delete=models.CASCADE)
     price = models.IntegerField(default=0)
     sku = models.IntegerField(default=0)
-    quantity = models.IntegerField(default=0)
+    quantity = models.IntegerField(default=1)
+
+    def __str__(self):
+        return f'{self.quantity} {self.item.name}'

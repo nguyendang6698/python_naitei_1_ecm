@@ -68,46 +68,45 @@
 								<!-- /Wishlist -->
 
 								<!-- Cart -->
-								<div class="dropdown">
-									<a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
-										<i class="fa fa-shopping-cart"></i>
-										<span>Gio Hang</span>
-										<div class="qty">3</div>
-									</a>
-									<div class="cart-dropdown">
-										<div class="cart-list">
-											<div class="product-widget">
-												<div class="product-img">
-													<img src="./img/product01.png" alt="">
-												</div>
-												<div class="product-body">
-													<h3 class="product-name"><a href="#">Ten San Pham</a></h3>
-													<h4 class="product-price"><span class="qty">1x</span>$980.00</h4>
-												</div>
-												<button class="delete"><i class="fa fa-close"></i></button>
-											</div>
+								{% if user.is_authenticated %}
+									<div class="dropdown">
+										<a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="true">
+											<i class="fa fa-shopping-cart"></i>
+											<span>Gio Hang</span>
+											{% comment %} <div class="qty">3</div> {% endcomment %}
+											{% if user.order_set.last %}
+												<div class="qty">{{user.order_set.last.orderdetail_set.count}}</div>
+											{% else %}
+												<div class="qty">0</div>
+											{% endif %}
+										</a>
+										<div class="cart-dropdown">
+											<div class="cart-list">
 
-											<div class="product-widget">
-												<div class="product-img">
-													<img src="./img/product02.png" alt="">
-												</div>
-												<div class="product-body">
-													<h3 class="product-name"><a href="#">Ten San Pham</a></h3>
-													<h4 class="product-price"><span class="qty">3x</span>$980.00</h4>
-												</div>
-												<button class="delete"><i class="fa fa-close"></i></button>
+												{% for item in user.order_set.last.orderdetail_set.all %}
+													<div class="product-widget">
+														<div class="product-img">
+															<img src="{{ item.item.image.url }}" alt="">
+														</div>
+														<div class="product-body">
+															<h3 class="product-name"><a href="{% url 'product-detail' item.item.id %}">{{ item }}</a></h3>
+															<h4 class="product-price">Total: ${{ item.price }}</h4>
+														</div>
+														<a href="{{ item.item.get_remove_from_cart_url }}"><button class="delete"><i class="fa fa-close"></i></button></a>
+													</div>
+												{% endfor %}
+
 											</div>
-										</div>
-										<div class="cart-summary">
-											<small>3 Item(s) duoc chon</small>
-											<h5>Tong cong: $2940.00</h5>
-										</div>
-										<div class="cart-btns">
-											<a href="#">Xem gio hang </a>
-											<a href="#">Thanh toan <i class="fa fa-arrow-circle-right"></i></a>
+											<div class="cart-summary">
+												<h5>Tong cong: ${{ user.order_set.last.ammount }}</h5>
+											</div>
+											<div class="cart-btns">
+												<a href="#">Xem gio hang </a>
+												<a href="#">Thanh toan <i class="fa fa-arrow-circle-right"></i></a>
+											</div>
 										</div>
 									</div>
-								</div>
+								{% endif %}
 								<!-- /Cart -->
 
 								<!-- Menu Toogle -->
