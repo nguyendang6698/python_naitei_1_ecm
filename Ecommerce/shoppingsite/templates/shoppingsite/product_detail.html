@@ -73,15 +73,7 @@
 					<p>{{ product.description }}</p>
 
 					<div class="add-to-cart">
-						<div class="qty-label">
-							Qty
-							<div class="input-number">
-								<input type="number">
-								<span class="qty-up">+</span>
-								<span class="qty-down">-</span>
-							</div>
-						</div>
-						<a href="{{ product.get_add_to_cart_url }}"><button class="add-to-cart-btn"><i class="fa fa-shopping-cart"></i> add to cart</button></a>
+						<a href="{{ product.get_add_to_cart_url }}?next={{ request.path }}"><button class="add-to-cart-btn"><i class="fa fa-shopping-cart"></i> add to cart</button></a>
 					</div>
 
 					<ul class="product-btns">

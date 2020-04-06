@@ -1,0 +1,62 @@
+{% extends 'shoppingsite/base.html' %}
+{% load static %}
+
+{% block content %}
+
+<table class="table table-striped table-responsive-md ">
+<h3>Gio hang</h3>
+<thead>
+  <tr>
+    <th>San Pham</th>
+    <th>Gia</th>
+    <th>So Luong</th>
+    <th>So Tien</th>
+    <th>Xoa?</th>
+  </tr>
+</thead>
+
+<tbody>
+    {% for item in order.orderdetail_set.all %}
+    <tr>
+        <td>
+            <img src="{{ item.item.image.url }}" style="height: 100px">
+            {{item.item}}
+        </td>
+        <td>{{ item.item.price}}</td>
+        <td>
+        <a href="{{ item.item.get_remove_single_item_from_cart_url }}?next={{ request.path }}" ><button type="button" class="btn btn-indigo btn-sm m-0"><b>-</b></button></a>
+         {{ item.quantity }} 
+        <a href="{{ item.item.get_add_to_cart_url }}?next={{ request.path }}" ><button type="button" class="btn btn-indigo btn-sm m-0"><b>+</b></button></a>
+        </td>
+        <td>{{ item.price }}</td>
+        <td>
+            <a href="{{ item.item.get_remove_from_cart_url }}?next={{ request.path }}" ><button type="button" class="btn btn-indigo btn-sm m-0">Xoa</button></a>
+        </td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="5"><br/><h5>Ban chua co gi trong gio.</h5><br/></td>
+    </tr>
+    <tr>
+        <td colspan="5" >
+            <a class="btn btn-primary col-md-2 pull-right" href="{% url 'store' %}">Tiep Tuc Mua Sam</a>
+        </td>
+    </tr>
+    {% endfor %}
+    {% if order.ammount %}
+    <tr>
+        <td colspan="4"><h5>Tong cong:</h5></td>
+        <td><h5>{{order.ammount}}</h5></td>
+    </tr>
+    <tr>
+        <td colspan="5">
+            <a class="btn btn-warning col-md-2 col-md-offset-7" href="{% url 'checkout' %}">Thanh Toan</a>
+            <a class="btn btn-primary col-md-2 pull-right" href="{% url 'store' %}">Tiep Tuc Mua Sam</a>
+        </td>
+    </tr>
+    {% endif %}
+</tbody>
+
+</table>
+
+{% endblock content %}

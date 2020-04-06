@@ -28,6 +28,9 @@ class Product(models.Model):
     
     def get_remove_from_cart_url(self):
         return reverse('remove-from-cart', args=[str(self.id)])
+    
+    def get_remove_single_item_from_cart_url(self):
+        return reverse('remove-single-item-from-cart', args=[str(self.id)])
 
 class Customer(AbstractUser):
     address = models.CharField(max_length=500, help_text='Input your address.')
@@ -48,7 +51,7 @@ class Order(models.Model):
     ammount = models.IntegerField(default = 0)      # Tong so tien
     shipping_address = models.CharField(max_length=500, help_text='Input address.')
     order_date = models.DateTimeField(auto_now_add=True)
-    # ordered = models.BooleanField(default= False)
+    ordered = models.BooleanField(default= False)
     
     STATUS = (
         ('a', 'accept'),
@@ -69,6 +72,9 @@ class Order(models.Model):
 
     def display_order_detail(self):
         return self.orderdetail_set.all()
+    
+    def get_total(self):
+        return self.ammount
 
 
 class OrderDetail(models.Model):    # Chi tiet 1 item trong gio hang
