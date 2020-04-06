@@ -18,7 +18,7 @@ class OrderAdmin(admin.ModelAdmin):
 
     fieldsets = (
         ('Payment Information', {
-            'fields': ('customer', 'ammount', 'shipping_address', 'order_status' )
+            'fields': ('customer', 'ammount', 'shipping_address', 'order_status', 'ordered' )
         }),
         # ('Items Information', {
         #     'fields': ('status', 'due_back','borrower')

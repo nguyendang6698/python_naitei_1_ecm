@@ -74,36 +74,43 @@
 											<i class="fa fa-shopping-cart"></i>
 											<span>Gio Hang</span>
 											{% comment %} <div class="qty">3</div> {% endcomment %}
-											{% if user.order_set.last %}
-												<div class="qty">{{user.order_set.last.orderdetail_set.count}}</div>
+											{% if user.order_set.last and not user.order_set.last.ordered %}
+												<div class="qty">{{ user.order_set.last.orderdetail_set.count }}</div>
 											{% else %}
 												<div class="qty">0</div>
 											{% endif %}
 										</a>
 										<div class="cart-dropdown">
 											<div class="cart-list">
-
-												{% for item in user.order_set.last.orderdetail_set.all %}
-													<div class="product-widget">
-														<div class="product-img">
-															<img src="{{ item.item.image.url }}" alt="">
+												{% if not user.order_set.last.ordered %}
+													{% for item in user.order_set.last.orderdetail_set.all %}
+														<div class="product-widget">
+															<div class="product-img">
+																<img src="{{ item.item.image.url }}" alt="">
+															</div>
+															<div class="product-body">
+																<h3 class="product-name"><a href="{% url 'product-detail' item.item.id %}">
+																	{{ item }}
+																</a></h3>
+																<h4 class="product-price">Total: ${{ item.price }}</h4>
+															</div>
+															<a href="{{ item.item.get_remove_from_cart_url }}?next={{ request.path }}"><button class="delete"><i class="fa fa-close"></i></button></a>
 														</div>
-														<div class="product-body">
-															<h3 class="product-name"><a href="{% url 'product-detail' item.item.id %}">{{ item }}</a></h3>
-															<h4 class="product-price">Total: ${{ item.price }}</h4>
-														</div>
-														<a href="{{ item.item.get_remove_from_cart_url }}"><button class="delete"><i class="fa fa-close"></i></button></a>
-													</div>
-												{% endfor %}
-
+													{% endfor %}
 											</div>
 											<div class="cart-summary">
 												<h5>Tong cong: ${{ user.order_set.last.ammount }}</h5>
 											</div>
 											<div class="cart-btns">
-												<a href="#">Xem gio hang </a>
-												<a href="#">Thanh toan <i class="fa fa-arrow-circle-right"></i></a>
+												<a href="{% url 'order-summary' %}">Xem gio hang </a>
+												<a href="{% url 'checkout' %}">Thanh toan <i class="fa fa-arrow-circle-right"></i></a>
 											</div>
+											{% else %}
+												{% comment %} <div class="cart-summary">
+													<h5>Tong cong: $0</h5>
+												</div> {% endcomment %}
+												<h5>Ban chua tao gio hang .</h5>
+											{% endif %}
 										</div>
 									</div>
 								{% endif %}
