@@ -1,5 +1,6 @@
 {% extends 'shoppingsite/base.html' %}
 {% load static %}
+{% load crispy_forms_tags %}
 
 {% block content %}
 
@@ -58,13 +59,15 @@
 					<h2 class="product-name">{{ product.name }}</h2>
 					<div>
 						<div class="product-rating">
-							<i class="fa fa-star"></i>
-							<i class="fa fa-star"></i>
-							<i class="fa fa-star"></i>
-							<i class="fa fa-star"></i>
-							<i class="fa fa-star-o"></i>
+							<span>{{average_rating}}</span>
+							{% with ''|center:average_rating_int as range %}
+								{% for i in range %}
+								<i class="fa fa-star"></i>
+								{% endfor %}
+							{% endwith %}
 						</div>
-						<a class="review-link" href="#">10 Review(s) | Add your review</a>
+						<br/>
+						<a class="review-link">{{comments.count}} Đánh giá</a>
 					</div>
 					<div>
 						<h3 class="product-price">${{ product.price }}</h3>
@@ -82,7 +85,7 @@
 
 					<ul class="product-links">
 						<li>Category:</li>
-						<li><a href="#">{{ product.category_id }}</a></li>
+						<li><a >{{ product.category.name }}</a></li>
 					</ul>
 
 					<ul class="product-links">
@@ -102,37 +105,31 @@
 				<div id="product-tab">
 					<!-- product tab nav -->
 					<ul class="tab-nav">
-						<li class="active"><a data-toggle="tab" href="#tab1">Description</a></li>
-						<li><a data-toggle="tab" href="#tab3">Reviews (3)</a></li>
+						<li class="active"><a data-toggle="tab" href="#tab1">Reviews ({{comments.count}})</a></li>
+						<li><a data-toggle="tab" href="#tab3">Mô tả</a></li>
 					</ul>
 					<!-- /product tab nav -->
 
 					<!-- product tab content -->
 					<div class="tab-content">
 						<!-- tab1  -->
-						<div id="tab1" class="tab-pane fade in active">
-							<div class="row">
-								<div class="col-md-12">
-									<p>{{ product.description }}</p>
-								</div>
-							</div>
-						</div>
+						
 						<!-- /tab1  -->
 
 						<!-- tab3  -->
-						<div id="tab3" class="tab-pane fade in">
+						<div id="tab1" class="tab-pane fade in active">
 							<div class="row">
 								<!-- Rating -->
 								<div class="col-md-3">
 									<div id="rating">
 										<div class="rating-avg">
-											<span>4.5</span>
+											<span>{{average_rating}}</span>
 											<div class="rating-stars">
-												<i class="fa fa-star"></i>
-												<i class="fa fa-star"></i>
-												<i class="fa fa-star"></i>
-												<i class="fa fa-star"></i>
-												<i class="fa fa-star-o"></i>
+												{% with ''|center:average_rating_int as range %}
+													{% for i in range %}
+													<i class="fa fa-star"></i>
+													{% endfor %}
+												{% endwith %}
 											</div>
 										</div>
 										<ul class="rating">
@@ -145,9 +142,9 @@
 													<i class="fa fa-star"></i>
 												</div>
 												<div class="rating-progress">
-													<div style="width: 80%;"></div>
+													<div style="width: {{five_star_percent}}%;"></div>
 												</div>
-												<span class="sum">3</span>
+												<span class="sum">{{five_star}}</span>
 											</li>
 											<li>
 												<div class="rating-stars">
@@ -158,9 +155,9 @@
 													<i class="fa fa-star-o"></i>
 												</div>
 												<div class="rating-progress">
-													<div style="width: 60%;"></div>
+													<div style="width: {{four_star_percent}}%;"></div>
 												</div>
-												<span class="sum">2</span>
+												<span class="sum">{{four_star}}</span>
 											</li>
 											<li>
 												<div class="rating-stars">
@@ -171,9 +168,9 @@
 													<i class="fa fa-star-o"></i>
 												</div>
 												<div class="rating-progress">
-													<div></div>
+													<div style="width: {{three_star_percent}}%;"></div>
 												</div>
-												<span class="sum">0</span>
+												<span class="sum">{{three_star}}</span>
 											</li>
 											<li>
 												<div class="rating-stars">
@@ -184,9 +181,9 @@
 													<i class="fa fa-star-o"></i>
 												</div>
 												<div class="rating-progress">
-													<div></div>
+													<div style="width: {{two_star_percent}}%;"></div>
 												</div>
-												<span class="sum">0</span>
+												<span class="sum">{{two_star}}</span>
 											</li>
 											<li>
 												<div class="rating-stars">
@@ -197,9 +194,9 @@
 													<i class="fa fa-star-o"></i>
 												</div>
 												<div class="rating-progress">
-													<div></div>
+													<div style="width: {{one_star_percent}}%;"></div>
 												</div>
-												<span class="sum">0</span>
+												<span class="sum">{{one_star}}</span>
 											</li>
 										</ul>
 									</div>
@@ -210,61 +207,25 @@
 								<div class="col-md-6">
 									<div id="reviews">
 										<ul class="reviews">
-											<li>
+											{% if not comments.count %}<strong>Chua co binh luan.</strong>{% endif %}
+											{% for comment in comments %}
+												<li>
 												<div class="review-heading">
-													<h5 class="name">John</h5>
-													<p class="date">27 DEC 2018, 8:0 PM</p>
+													<h5 class="name">{{comment.user.username}}</h5>
+													<p class="date">{{comment.created_at}}</p>
 													<div class="review-rating">
-														<i class="fa fa-star"></i>
-														<i class="fa fa-star"></i>
-														<i class="fa fa-star"></i>
-														<i class="fa fa-star"></i>
-														<i class="fa fa-star-o empty"></i>
+														{% with ''|center:comment.rating as range %}
+															{% for i in range %}
+															<i class="fa fa-star"></i>
+															{% endfor %}
+														{% endwith %}
 													</div>
 												</div>
 												<div class="review-body">
-													<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>
+													<p>{{comment.content}}</p>
 												</div>
 											</li>
-											<li>
-												<div class="review-heading">
-													<h5 class="name">John</h5>
-													<p class="date">27 DEC 2018, 8:0 PM</p>
-													<div class="review-rating">
-														<i class="fa fa-star"></i>
-														<i class="fa fa-star"></i>
-														<i class="fa fa-star"></i>
-														<i class="fa fa-star"></i>
-														<i class="fa fa-star-o empty"></i>
-													</div>
-												</div>
-												<div class="review-body">
-													<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>
-												</div>
-											</li>
-											<li>
-												<div class="review-heading">
-													<h5 class="name">John</h5>
-													<p class="date">27 DEC 2018, 8:0 PM</p>
-													<div class="review-rating">
-														<i class="fa fa-star"></i>
-														<i class="fa fa-star"></i>
-														<i class="fa fa-star"></i>
-														<i class="fa fa-star"></i>
-														<i class="fa fa-star-o empty"></i>
-													</div>
-												</div>
-												<div class="review-body">
-													<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua</p>
-												</div>
-											</li>
-										</ul>
-										<ul class="reviews-pagination">
-											<li class="active">1</li>
-											<li><a href="#">2</a></li>
-											<li><a href="#">3</a></li>
-											<li><a href="#">4</a></li>
-											<li><a href="#"><i class="fa fa-angle-right"></i></a></li>
+											{% endfor %}
 										</ul>
 									</div>
 								</div>
@@ -272,13 +233,16 @@
 
 								<!-- Review Form -->
 								<div class="col-md-3">
-									<div id="review-form">
-										<form class="review-form">
-											<input class="input" type="text" placeholder="Your Name">
-											<input class="input" type="email" placeholder="Your Email">
-											<textarea class="input" placeholder="Your Review"></textarea>
+									{% if user.is_authenticated %}
+										<div id="review-form">
+										<form class="review-form" method="POST">
+											{% csrf_token %}
+											<strong>Người dùng: </strong>{{user.username}}
+											<br/>
+											<br/>
+												{{ form|crispy }}
 											<div class="input-rating">
-												<span>Your Rating: </span>
+												<span>Đánh giá: </span>
 												<div class="stars">
 													<input id="star5" name="rating" value="5" type="radio"><label for="star5"></label>
 													<input id="star4" name="rating" value="4" type="radio"><label for="star4"></label>
@@ -290,11 +254,22 @@
 											<button class="primary-btn">Submit</button>
 										</form>
 									</div>
+									{% else %}
+										<p>Bạn cần đăng nhập để bình luận.</p>
+										<a href="{% url 'user-login' %}"><button class="primary-btn">Đăng nhập</button></a>
+									{% endif %}
 								</div>
 								<!-- /Review Form -->
 							</div>
 						</div>
 						<!-- /tab3  -->
+						<div id="tab3" class="tab-pane fade in ">
+							<div class="row">
+								<div class="col-md-12">
+									<p>{{ product.description }}</p>
+								</div>
+							</div>
+						</div>
 					</div>
 					<!-- /product tab content  -->
 				</div>
@@ -306,143 +281,5 @@
 	<!-- /container -->
 </div>
 <!-- /SECTION -->
-
-{% comment %} <!-- Section -->
-<div class="section">
-	<!-- container -->
-	<div class="container">
-		<!-- row -->
-		<div class="row">
-
-			<div class="col-md-12">
-				<div class="section-title text-center">
-					<h3 class="title">Related Products</h3>
-				</div>
-			</div>
-
-			<!-- product -->
-			<div class="col-md-3 col-xs-6">
-				<div class="product">
-					<div class="product-img">
-						<img src="./img/product01.png" alt="">
-						<div class="product-label">
-							<span class="sale">-30%</span>
-						</div>
-					</div>
-					<div class="product-body">
-						<p class="product-category">Category</p>
-						<h3 class="product-name"><a href="#">product name goes here</a></h3>
-						<h4 class="product-price">$980.00 <del class="product-old-price">$990.00</del></h4>
-						<div class="product-rating">
-						</div>
-						<div class="product-btns">
-							<button class="add-to-wishlist"><i class="fa fa-heart-o"></i><span class="tooltipp">add to wishlist</span></button>
-							<button class="add-to-compare"><i class="fa fa-exchange"></i><span class="tooltipp">add to compare</span></button>
-							<button class="quick-view"><i class="fa fa-eye"></i><span class="tooltipp">quick view</span></button>
-						</div>
-					</div>
-					<div class="add-to-cart">
-						<button class="add-to-cart-btn"><i class="fa fa-shopping-cart"></i> add to cart</button>
-					</div>
-				</div>
-			</div>
-			<!-- /product -->
-
-			<!-- product -->
-			<div class="col-md-3 col-xs-6">
-				<div class="product">
-					<div class="product-img">
-						<img src="./img/product02.png" alt="">
-						<div class="product-label">
-							<span class="new">NEW</span>
-						</div>
-					</div>
-					<div class="product-body">
-						<p class="product-category">Category</p>
-						<h3 class="product-name"><a href="#">product name goes here</a></h3>
-						<h4 class="product-price">$980.00 <del class="product-old-price">$990.00</del></h4>
-						<div class="product-rating">
-							<i class="fa fa-star"></i>
-							<i class="fa fa-star"></i>
-							<i class="fa fa-star"></i>
-							<i class="fa fa-star"></i>
-							<i class="fa fa-star"></i>
-						</div>
-						<div class="product-btns">
-							<button class="add-to-wishlist"><i class="fa fa-heart-o"></i><span class="tooltipp">add to wishlist</span></button>
-							<button class="add-to-compare"><i class="fa fa-exchange"></i><span class="tooltipp">add to compare</span></button>
-							<button class="quick-view"><i class="fa fa-eye"></i><span class="tooltipp">quick view</span></button>
-						</div>
-					</div>
-					<div class="add-to-cart">
-						<button class="add-to-cart-btn"><i class="fa fa-shopping-cart"></i> add to cart</button>
-					</div>
-				</div>
-			</div>
-			<!-- /product -->
-
-			<div class="clearfix visible-sm visible-xs"></div>
-
-			<!-- product -->
-			<div class="col-md-3 col-xs-6">
-				<div class="product">
-					<div class="product-img">
-						<img src="./img/product03.png" alt="">
-					</div>
-					<div class="product-body">
-						<p class="product-category">Category</p>
-						<h3 class="product-name"><a href="#">product name goes here</a></h3>
-						<h4 class="product-price">$980.00 <del class="product-old-price">$990.00</del></h4>
-						<div class="product-rating">
-							<i class="fa fa-star"></i>
-							<i class="fa fa-star"></i>
-							<i class="fa fa-star"></i>
-							<i class="fa fa-star"></i>
-							<i class="fa fa-star-o"></i>
-						</div>
-						<div class="product-btns">
-							<button class="add-to-wishlist"><i class="fa fa-heart-o"></i><span class="tooltipp">add to wishlist</span></button>
-							<button class="add-to-compare"><i class="fa fa-exchange"></i><span class="tooltipp">add to compare</span></button>
-							<button class="quick-view"><i class="fa fa-eye"></i><span class="tooltipp">quick view</span></button>
-						</div>
-					</div>
-					<div class="add-to-cart">
-						<button class="add-to-cart-btn"><i class="fa fa-shopping-cart"></i> add to cart</button>
-					</div>
-				</div>
-			</div>
-			<!-- /product -->
-
-			<!-- product -->
-			<div class="col-md-3 col-xs-6">
-				<div class="product">
-					<div class="product-img">
-						<img src="./img/product04.png" alt="">
-					</div>
-					<div class="product-body">
-						<p class="product-category">Category</p>
-						<h3 class="product-name"><a href="#">product name goes here</a></h3>
-						<h4 class="product-price">$980.00 <del class="product-old-price">$990.00</del></h4>
-						<div class="product-rating">
-						</div>
-						<div class="product-btns">
-							<button class="add-to-wishlist"><i class="fa fa-heart-o"></i><span class="tooltipp">add to wishlist</span></button>
-							<button class="add-to-compare"><i class="fa fa-exchange"></i><span class="tooltipp">add to compare</span></button>
-							<button class="quick-view"><i class="fa fa-eye"></i><span class="tooltipp">quick view</span></button>
-						</div>
-					</div>
-					<div class="add-to-cart">
-						<button class="add-to-cart-btn"><i class="fa fa-shopping-cart"></i> add to cart</button>
-					</div>
-				</div>
-			</div>
-			<!-- /product -->
-
-		</div>
-		<!-- /row -->
-	</div>
-	<!-- /container -->
-</div>
-<!-- /Section --> {% endcomment %}
 
 {% endblock %}

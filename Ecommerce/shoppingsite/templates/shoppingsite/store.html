@@ -63,7 +63,7 @@
 					<!-- product -->
 					{% for product in product_list %}
 						<div class="col-md-3 col-xs-6">
-						<div class="product">
+						<div class="product" >
 							<div class="product-img">
 								<img src="{{ product.image.url }}" alt="">
 							</div>
@@ -115,9 +115,6 @@
 							<li><a href="{{ request.path }}?page={{ page_obj.previous_page_number }}"><i class="fa fa-angle-left"></i></a></li>
 						{% endif %}
 							<li class="active">{{ page_obj.number }}</li>
-							<li><a href="#">2</a></li>
-							<li><a href="#">3</a></li>
-							<li><a href="#">4</a></li>
 						{% if page_obj.has_next %}
 							<li><a href="{{ request.path }}?page={{ page_obj.next_page_number }}"><i class="fa fa-angle-right"></i></a></li>
 						{% endif %}

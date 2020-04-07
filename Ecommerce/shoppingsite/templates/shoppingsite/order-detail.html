@@ -1,0 +1,94 @@
+{% extends 'shoppingsite/base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block content %}
+		<center><h3>Thanh toán</h3></center>
+		<!-- SECTION -->
+		<div class="section">
+			<form method="POST" action="{% url 'checkout' %}">
+            {% csrf_token %}
+			<!-- container -->
+			<div class="container">
+				<!-- row -->
+				<div class="row">
+
+					<!-- Order Details -->
+					<div class="col-md-8 col-md-offset-2 order-details">
+						<div class="section-title text-center">
+							<h3 class="title">Hóa đơn</h3>
+						</div>
+						<div class="order-summary">
+							<div class="order-col">
+								<div><strong>Sản phẩm</strong></div>
+								<div><strong>Số tiền</strong></div>
+							</div>
+							<div class="order-products">
+								{% comment %} <div class="order-col">
+									<div>1x Product Name Goes Here</div>
+									<div>$980.00</div>
+								</div>
+								<div class="order-col">
+									<div>2x Product Name Goes Here</div>
+									<div>$980.00</div>
+								</div> {% endcomment %}
+								{% for item in order.orderdetail_set.all %}
+								<div class="order-col" style="padding: 10px">
+									<img src="{{ item.item.image.url }}" style="height: 75px">
+									<a href="{% url 'product-detail' item.item.id %}">{{item.item}}</a> x{{item.quantity}}
+									<div class="text-secondary">${{item.price}}</div>
+								</div>
+								{% endfor %}
+							</div>
+							<div class="order-col">
+								<div><strong>Phí ship</strong></div>
+								<div><strong>FREE</strong></div>
+							</div>
+							<div class="order-col">
+								<div><strong>Tổng Cộng</strong></div>
+								<div><strong class="order-total">${{order.ammount}}</strong></div>
+							</div>
+						</div>
+						<div class="payment-method">
+							<h5>Phương thức thanh toán</h5>
+							<br/>
+							<div class="input-radio">
+								<input type="radio" name="payment" id="payment-1">
+								<label for="payment-1">
+									<span></span>
+									Giao hàng nhận tiền (COD)
+								</label>
+								<div class="caption">
+									<p>Shipper đưa hàng đến tận nhà rồi mới nhận tiền.</p>
+								</div>
+							</div>
+							<div class="input-radio">
+								<input type="radio" name="payment" id="payment-2">
+								<label for="payment-2">
+									<span></span>
+									Chuyển khoản ngân hàng
+								</label>
+								<div class="caption">
+									<p>Chuyển khoản qua ngân hàng trước, rồi hàng sẽ tới nhà bạn.</p>
+								</div>
+							</div>
+						</div>
+						<div class="payment-method">
+							<h5>Địa chỉ giao hàng</h5>
+							<p>{{order.shipping_address}}</p>
+						</div>
+						{% if not order.ordered %}
+                        <div class="form-group">
+							<center><button class="primary-btn order-submit" type="submit">Thanh toan</button></center>
+						</div>
+                        {% endif %}
+					</div>
+					<!-- /Order Details -->
+				</div>
+				<!-- /row -->
+			</div>
+			<!-- /container -->
+			</form>
+		</div>
+		<!-- /SECTION -->
+
+{% endblock content %}
