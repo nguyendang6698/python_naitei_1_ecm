@@ -48,12 +48,14 @@
         <td colspan="4"><h5>Tong cong:</h5></td>
         <td><h5>{{order.ammount}}</h5></td>
     </tr>
-    <tr>
+    {% if not order.ordered %}
+        <tr>
         <td colspan="5">
             <a class="btn btn-warning col-md-2 col-md-offset-7" href="{% url 'checkout' %}">Thanh Toan</a>
             <a class="btn btn-primary col-md-2 pull-right" href="{% url 'store' %}">Tiep Tuc Mua Sam</a>
         </td>
     </tr>
+    {% endif %}
     {% endif %}
 </tbody>
 

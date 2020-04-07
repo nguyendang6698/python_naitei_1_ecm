@@ -13,7 +13,7 @@ class OrderDetailInline(admin.TabularInline):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ('customer', 'ammount', 'order_status')
+    list_display = ('customer', 'ammount', 'order_status','ordered')
     inlines = [OrderDetailInline]
 
     fieldsets = (
@@ -27,3 +27,4 @@ class OrderAdmin(admin.ModelAdmin):
 
 # admin.site.register(OrderDetail)
 admin.site.register(Category)
+admin.site.register(Comment)

@@ -1,7 +1,68 @@
 {% extends 'shoppingsite/base.html' %}
 {% load crispy_forms_tags %}
+
 {% block content %}
     <div class="content-section">
-        {{user.username}}
+        
+        <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3">
+            <img src="{{user.image.url}}" alt="avatar" style="width:125px" class="thumbnail">
+            <br>
+            <strong>User Name: </strong><p>{{user.username}}</p>
+            <strong>Address: </strong><p>{{user.address}}</p>
+            <strong>First Name:</strong><p>{{user.first_name}}</p>
+            <strong>Last Name:</strong><p>{{user.last_name}}</p>
+        </div>
+           
+            
+        </div>
+        
+        <div class="col-xs-8 col-sm-8 col-md-8 col-lg-8">
+            
+            <h3>Lich su don hang</h3>
+            <hr>
+            <table class="table table-striped table-responsive-md ">
+                <thead>
+                  <tr>
+                    <th>Order</th>
+                    <th>Dia chi giao hang</th>
+                    <th>So Tien</th>
+                    <th>Ordered?</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                
+                <tbody>
+                    {% for order in user.order_set.all %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'order-history' order.id %}">{{order}}</a>
+                        </td>
+                        <!-- <td>{{ item.item.price}}</td> -->
+                        <td>{{order.shipping_address}}</td>
+                        <td>
+                        <!-- <a href="#" ><button type="button" class="btn btn-indigo btn-sm m-0"><b>-</b></button></a> -->
+                         ${{ order.ammount }} 
+                        <!-- <a href="#" ><button type="button" class="btn btn-indigo btn-sm m-0"><b>+</b></button></a> -->
+                        </td>
+                        <td>{{order.ordered}}</td>
+                        <td>{{ order.order_status}}</td>
+                        <!-- <td>{{ item.price }}</td>
+                        <td>
+                            <a href="#" ><button type="button" class="btn btn-indigo btn-sm m-0">Xoa</button></a>
+                        </td> -->
+                    </tr>
+                    {% endfor %}
+                    {% if user.order.ammount %}
+                    <tr>
+                        <td colspan="4"><h5>Tong cong:</h5></td>
+                        <td><h5>{{order.ammount}}</h5></td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+                
+                </table>
+        </div>
+        
+        
     </div>
 {% endblock %}

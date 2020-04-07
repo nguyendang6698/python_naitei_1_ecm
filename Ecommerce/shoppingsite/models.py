@@ -17,7 +17,7 @@ class Product(models.Model):
     sku = models.IntegerField(default=0,blank=False)    # So luong hang trong kho
     description = models.TextField(max_length=1000, help_text='Enter product description', default='')
     image = models.ImageField(default='product_default.png', upload_to='product_pics')
-    category_id = models.ForeignKey(Category, on_delete=models.CASCADE)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
     create_date = models.DateTimeField(auto_now=False, auto_now_add=True)
 
     def __str__(self):
@@ -44,8 +44,10 @@ class Comment(models.Model):
     title = models.CharField(default='No title', max_length=500)
     rating = models.IntegerField(blank=True, null=True)
     content = models.TextField(default='', max_length=1000)
+    created_at = models.DateField(auto_now=True)
 
-
+    def __str__(self):
+        return f'{self.user.username}, {self.product.name}, {self.created_at}'
 class Order(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE)
     ammount = models.IntegerField(default = 0)      # Tong so tien

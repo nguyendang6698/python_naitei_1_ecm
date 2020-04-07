@@ -1,10 +1,11 @@
 {% extends 'shoppingsite/base.html' %}
 {% load static %}
-
+{% load crispy_forms_tags %}
 {% block content %}
-		<center><h3>Thanh Toan</h3></center>
+		<center><h3>Thanh toán</h3></center>
 		<!-- SECTION -->
 		<div class="section">
+			<form method="POST" action="{% url 'checkout' %}">
 			<!-- container -->
 			<div class="container">
 				<!-- row -->
@@ -16,74 +17,14 @@
 							<div class="section-title">
 								<h3 class="title">Billing address</h3>
 							</div>
-							<div class="form-group">
-								<input class="input" type="text" name="first-name" placeholder="First Name">
-							</div>
-							<div class="form-group">
-								<input class="input" type="text" name="last-name" placeholder="Last Name">
-							</div>
-							<div class="form-group">
-								<input class="input" type="email" name="email" placeholder="Email">
-							</div>
-							<div class="form-group">
-								<input class="input" type="text" name="address" placeholder="Address">
-							</div>
-							<div class="form-group">
-								<input class="input" type="text" name="city" placeholder="City">
-							</div>
-							<div class="form-group">
-								<input class="input" type="text" name="country" placeholder="Country">
-							</div>
-							<div class="form-group">
-								<input class="input" type="text" name="zip-code" placeholder="ZIP Code">
-							</div>
-							<div class="form-group">
-								<input class="input" type="tel" name="tel" placeholder="Telephone">
-							</div>
+							
+            					{% csrf_token %}
+								<div class="form-group">
+									{{form|crispy}}
+								</div>
 							
 						</div>
 						<!-- /Billing Details -->
-
-						<!-- Shiping Details -->
-						<div class="shiping-details">
-							<div class="section-title">
-								<h3 class="title">Shiping address</h3>
-							</div>
-							<div class="input-checkbox">
-								<input type="checkbox" id="shiping-address">
-								<label for="shiping-address">
-									<span></span>
-									Ship to a diffrent address?
-								</label>
-								<div class="caption">
-									<div class="form-group">
-										<input class="input" type="text" name="first-name" placeholder="First Name">
-									</div>
-									<div class="form-group">
-										<input class="input" type="text" name="last-name" placeholder="Last Name">
-									</div>
-									<div class="form-group">
-										<input class="input" type="email" name="email" placeholder="Email">
-									</div>
-									<div class="form-group">
-										<input class="input" type="text" name="address" placeholder="Address">
-									</div>
-									<div class="form-group">
-										<input class="input" type="text" name="city" placeholder="City">
-									</div>
-									<div class="form-group">
-										<input class="input" type="text" name="country" placeholder="Country">
-									</div>
-									<div class="form-group">
-										<input class="input" type="text" name="zip-code" placeholder="ZIP Code">
-									</div>
-									<div class="form-group">
-										<input class="input" type="tel" name="tel" placeholder="Telephone">
-									</div>
-								</div>
-							</div>
-						</div>
-						<!-- /Shiping Details -->
 
 						<!-- Order notes -->
 						<div class="order-notes">
@@ -95,12 +36,12 @@
 					<!-- Order Details -->
 					<div class="col-md-5 order-details">
 						<div class="section-title text-center">
-							<h3 class="title">Hoa Don</h3>
+							<h3 class="title">Hóa đơn</h3>
 						</div>
 						<div class="order-summary">
 							<div class="order-col">
-								<div><strong>San Pham</strong></div>
-								<div><strong>So Tien</strong></div>
+								<div><strong>Sản phẩm</strong></div>
+								<div><strong>Số tiền</strong></div>
 							</div>
 							<div class="order-products">
 								{% comment %} <div class="order-col">
@@ -112,69 +53,60 @@
 									<div>$980.00</div>
 								</div> {% endcomment %}
 								{% for item in order.orderdetail_set.all %}
-								<div class="order-col">
-									<a href="{% url 'product-detail' item.item.id %}">{{item.quantity}}x {{item.item}}</a>
+								<div class="order-col" style="padding: 10px">
+									<img src="{{ item.item.image.url }}" style="height: 75px">
+									<a href="{% url 'product-detail' item.item.id %}">{{item.item}}</a> x{{item.quantity}}
 									<div class="text-secondary">${{item.price}}</div>
 								</div>
 								{% endfor %}
 							</div>
 							<div class="order-col">
-								<div>Tien Ship</div>
+								<div><strong>Phí ship</strong></div>
 								<div><strong>FREE</strong></div>
 							</div>
 							<div class="order-col">
-								<div><strong>Tong Cong</strong></div>
+								<div><strong>Tổng Cộng</strong></div>
 								<div><strong class="order-total">${{order.ammount}}</strong></div>
 							</div>
 						</div>
 						<div class="payment-method">
-							<h5>Phuong thuc thanh toan</h5>
+							<h5>Phương thức thanh toán</h5>
 							<br/>
 							<div class="input-radio">
 								<input type="radio" name="payment" id="payment-1">
 								<label for="payment-1">
 									<span></span>
-									Direct Bank Transfer
+									Giao hàng nhận tiền (COD)
 								</label>
 								<div class="caption">
-									<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+									<p>Shipper đưa hàng đến tận nhà rồi mới nhận tiền.</p>
 								</div>
 							</div>
 							<div class="input-radio">
 								<input type="radio" name="payment" id="payment-2">
 								<label for="payment-2">
 									<span></span>
-									Cheque Payment
+									Chuyển khoản ngân hàng
 								</label>
 								<div class="caption">
-									<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-								</div>
-							</div>
-							<div class="input-radio">
-								<input type="radio" name="payment" id="payment-3">
-								<label for="payment-3">
-									<span></span>
-									Paypal System
-								</label>
-								<div class="caption">
-									<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+									<p>Chuyển khoản qua ngân hàng trước, rồi hàng sẽ tới nhà bạn.</p>
 								</div>
 							</div>
 						</div>
-						<div class="input-checkbox">
-							<input type="checkbox" id="terms">
-							<label for="terms">
-								<span></span>
-								I've read and accept the <a href="#">terms & conditions</a>
-							</label>
+						<div class="payment-method">
+							<h5>Địa chỉ giao hàng</h5>
+							<p>{{order.shipping_address}}</p>
 						</div>
-						<a href="#" class="primary-btn order-submit">Thanh Toan</a>
+						<div class="form-group">
+							<button class="primary-btn order-submit" type="submit">Thanh toan</button>
+						</div>
 					</div>
 					<!-- /Order Details -->
 				</div>
 				<!-- /row -->
 			</div>
 			<!-- /container -->
+			</form>
 		</div>
 		<!-- /SECTION -->
 
