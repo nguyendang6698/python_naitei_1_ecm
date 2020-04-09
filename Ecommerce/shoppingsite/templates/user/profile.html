@@ -24,10 +24,10 @@
                 <thead>
                   <tr>
                     <th>Order</th>
-                    <th>Dia chi giao hang</th>
-                    <th>So Tien</th>
-                    <th>Ordered?</th>
-                    <th>Status</th>
+                    <th>Địa chỉ giao hàng</th>
+                    <th>Sô tiền</th>
+                    <th>Đã gửi?</th>
+                    <th>Trạng thái</th>
                   </tr>
                 </thead>
                 
@@ -44,8 +44,15 @@
                          ${{ order.ammount }} 
                         <!-- <a href="#" ><button type="button" class="btn btn-indigo btn-sm m-0"><b>+</b></button></a> -->
                         </td>
-                        <td>{{order.ordered}}</td>
-                        <td>{{ order.order_status}}</td>
+                        {% if order.ordered == True %}
+                        <td>Đã đặt hàng.</td>
+                        {% else %}
+                        <td>Vẫn chưa.</td>
+                        {% endif%}
+                        {% comment %} <td>{{ order.get_order_status_display }}</td> {% endcomment %}
+                        <td><p class="{% if order.order_status == 'a' %}text-success{% elif order.order_status == 'd' %}text-danger{% else %}text-warning{% endif %}">
+                            <strong>{{ order.get_order_status_display }}</strong>
+                        </p></td>
                         <!-- <td>{{ item.price }}</td>
                         <td>
                             <a href="#" ><button type="button" class="btn btn-indigo btn-sm m-0">Xoa</button></a>

@@ -41,13 +41,16 @@
 						<!-- SEARCH BAR -->
 						<div class="col-md-6">
 							<div class="header-search">
-								<form>
-									<select class="input-select">
-										<option value="0">Chon lua</option>
+								<form method="GET" action="{% url 'search' %}" >
+									<select class="input-select" name="category">
+										<option value="0">Tất Cả</option>
+										<option value="1">Dien Thoai</option>
+										<option value="2">Laptop</option>
+										<option value="3">Phu Kien</option>
 										{% comment %} {% for category in  %}{% endfor %} {% endcomment %}
 									</select>
-									<input class="input" placeholder="Search here">
-									<button class="search-btn">Search</button>
+									<input class="input" name="product" placeholder="Search here">
+									<button class="search-btn submit">Search</button>
 								</form>
 							</div>
 						</div>

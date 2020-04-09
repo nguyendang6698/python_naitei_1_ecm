@@ -1,0 +1,5 @@
+{% autoescape off %}
+Chào {{ user.username }},
+Hãy nhấn vào đường link đi nào,
+http://{{ domain }}{% url 'activate' uidb64=uid token=token %}
+{% endautoescape %}

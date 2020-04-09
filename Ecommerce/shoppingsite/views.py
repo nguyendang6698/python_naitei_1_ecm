@@ -1,3 +1,5 @@
+from django.conf import settings
+from django.core.mail import send_mail
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages 
@@ -8,6 +10,17 @@ from .forms import SignupForm, CheckoutForm, CommentForm
 from django.contrib.auth.decorators import login_required
 from django.views import generic
 from .models import Product, Customer, Order, OrderDetail, Comment, Category
+from django.template.loader import render_to_string
+from .token import account_activation_token
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.contrib.sites.shortcuts import get_current_site
+from django.utils.encoding import force_bytes, force_text
+from django.contrib.auth import get_user_model
+from django.contrib.auth import login, authenticate
+from django.core.mail import EmailMessage
+
+User = get_user_model()
+# from django.contrib.auth import login, authenticate
 
 # Create your views here.
 
@@ -25,17 +38,61 @@ class IndexView(generic.View):
             return render(self.request, 'shoppingsite/index.html')
 
 def register(request):
+    # if request.method == 'POST':
+    #     form = SignupForm(request.POST)
+    #     if form.is_valid():
+    #         form.save()
+    #         username = form.cleaned_data.get('username')
+    #         messages.success(request, f'Chao mung {username}, ban la khach hang moi cua chung toi!')
+    #         return redirect('user-login')
+    #         # return HttpResponse("Thanh cong")
+    # else:
+    #     form = SignupForm()
+    # return render(request, 'user/user_register.html', {'form': form})
+    
     if request.method == 'POST':
         form = SignupForm(request.POST)
         if form.is_valid():
-            form.save()
+            user = form.save(commit=False)
+            user.is_active = False
             username = form.cleaned_data.get('username')
-            messages.success(request, f'Chao mung {username}, ban la khach hang moi cua chung toi!')
-            return redirect('user-login')
-            # return HttpResponse("Thanh cong")
+            user.save()
+            current_site = get_current_site(request)
+            email_subject = 'Hãy kích hoạt tài khoản của bạn.'
+            message = render_to_string('user/activate_account.html', {
+                'user': user,
+                'domain': current_site.domain,
+                'uid': urlsafe_base64_encode(force_bytes(user.pk)),
+                'token': account_activation_token.make_token(user),
+            })
+            to_email = [form.cleaned_data.get('email'),]
+            
+            # email = EmailMessage(email_subject, message, to=[to_email])
+            # email.send()
+
+            from_email = settings.EMAIL_HOST_USER
+            send_mail(email_subject, message, from_email, to_email, fail_silently=True)
+            messages.success(request, f'Chào mừng {username}, chúng tôi đã gủi email xác thực cho bạn, hãy check mail và kích hoạt tài khoản của bạn!')
+            return redirect("/")
     else:
         form = SignupForm()
     return render(request, 'user/user_register.html', {'form': form})
+
+def activate_account(request, uidb64, token):
+    try:
+        uid = force_bytes(urlsafe_base64_decode(uidb64))
+        user = User.objects.get(pk=uid)
+    except(TypeError, ValueError, OverflowError, User.DoesNotExist):
+        user = None
+    if user is not None and account_activation_token.check_token(user, token):
+        user.is_active = True
+        user.save()
+        # login(request, user)
+        messages.success(request, f'Chào mừng {user.username}, bạn đã đăng kí thành công!')
+        return redirect("user-login")
+    else:
+        messages.warning(request, f'Kích hoạt không thành công')
+        return redirect("/")
 
 @login_required(login_url='/shoppingsite/login/')
 def profile(request):
@@ -179,14 +236,14 @@ def add_to_cart(request, id):
             order.ammount += cost
             order_item.save()
             order.save()
-            messages.info(request, f"Da them <strong>1</strong> chiec <strong>{product.name}</strong> nua vao gio hang.<p>Hien co <strong>{order_item.quantity}</strong> chiec trong gio hang.</p>")
+            messages.info(request, f"Đã thêm <strong>1</<strong> {product.name}</strong> vào giỏ hàng.<p>Hiện có <strong>{order_item.quantity}</strong> trong giỏ hàng.</p>")
         else:
             order_item = OrderDetail.objects.create(item=product,order=order, price=cost)
             # order_item.price = cost
             order.orderdetail_set.add(order_item)
             order.ammount += cost
             order.save()
-            messages.info(request, f"1 chiec <strong>{product.name}</strong> da vao gio hang.")
+            messages.info(request, f"1 <strong>{product.name}</strong> đã vào giỏ hàng.")
     else:
         order = Order.objects.create(customer=request.user, shipping_address=request.user.address)
         order_item = OrderDetail.objects.create(item=product,order=order,price=cost)
@@ -194,7 +251,7 @@ def add_to_cart(request, id):
         order.orderdetail_set.add(order_item)
         order.ammount += cost
         order.save()
-        messages.info(request, f"1 chiec <strong>{product.name}</strong> da vao gio hang.")
+        messages.info(request, f"1 <strong>{product.name}</strong> đã vào giỏ hàng.")
     return HttpResponseRedirect(redirect_to)
 
 @login_required(login_url='/shoppingsite/login/')
@@ -296,7 +353,16 @@ class CheckoutView(LoginRequiredMixin, generic.View):
                 item.item.sku -= item.quantity
                 item.item.save()
             order.save()
-            messages.success(self.request,"Ban da dat hang thanh cong")
+            messages.success(self.request,"Bạn đã đặt hàng thành công.")
+            subject = "Cảm ơn bạn đã đặt hàng trên trang của chúng tôi."
+            content = "Sản phẩm bao gồm: " + "\n"
+            for orderdetail in order.orderdetail_set.all():
+                content += str(orderdetail.quantity)+ " " + str(orderdetail.item) + " giá " + str(orderdetail.price) + "\n"
+            content += "Tổng số tiền: " + str(order.ammount) + "\n"
+            content += "Địa chỉ giao hàng: " + str(order.shipping_address) + "\n"
+            from_email = settings.EMAIL_HOST_USER
+            to_list = [self.request.user.email, settings.EMAIL_HOST_USER]
+            send_mail(subject, content, from_email, to_list, fail_silently=True)
             return redirect('order-history', pk=order.id)
         except ObjectDoesNotExist:
             messages.warning(self.request, "Ban khong co gio hang nao")
@@ -307,3 +373,24 @@ class OrderHistoryDetailView(LoginRequiredMixin, generic.DetailView):
     model = Order
     template_name = "shoppingsite/order-detail.html"
 
+class SearchProductView(generic.View):
+
+    def get(self, *args, **kwargs):
+        try:
+            category = self.request.GET.get('category')
+            name = self.request.GET.get('product')
+            if category == '0':
+                product_list = Product.objects.filter(name__icontains=name)
+            else:
+                product_list = Product.objects.filter(category__id=category).filter(name__icontains=name)
+            if product_list.count() != 0:
+                pass
+            else:
+                messages.error(self.request, "Không có sản phẩm nào như vậy", extra_tags='danger')
+            context = {
+                    'product_list': product_list,
+                }
+            return render(self.request, 'shoppingsite/store.html', context)
+        except ObjectDoesNotExist:
+            messages.error(self.request, "Không có sản phẩm nào như vậy", extra_tags='danger')
+            return render(self.request, 'shoppingsite/store.html')

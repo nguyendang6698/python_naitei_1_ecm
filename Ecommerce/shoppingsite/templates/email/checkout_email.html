@@ -1,0 +1,132 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		 <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+
+		<title>Ecommerce</title>
+
+ 		<!-- Google font -->
+ 		<link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700" rel="stylesheet">
+
+ 		<!-- Bootstrap -->
+ 		<link type="text/css" rel="stylesheet" href="{% static 'shoppingsite/css/bootstrap.min.css' %}"/>
+
+ 		<!-- Slick -->
+ 		<link type="text/css" rel="stylesheet" href="{% static 'shoppingsite/css/slick.css' %}"/>
+ 		<link type="text/css" rel="stylesheet" href="{% static 'shoppingsite/css/slick-theme.css' %}"/>
+
+ 		<!-- nouislider -->
+ 		<link type="text/css" rel="stylesheet" href="{% static 'shoppingsite/css/nouislider.min.css' %}"/>
+
+ 		<!-- Font Awesome Icon -->
+ 		<link rel="stylesheet" href="{% static 'shoppingsite/css/font-awesome.min.css' %}">
+
+ 		<!-- Custom stlylesheet -->
+ 		<link type="text/css" rel="stylesheet" href="{% static 'shoppingsite/css/style.css' %}"/>
+
+    </head>
+	<body>
+		<center><h3>Thanh toán</h3></center>
+		<!-- SECTION -->
+		<div class="section">
+			<form method="POST" action="{% url 'checkout' %}">
+            {% csrf_token %}
+			<!-- container -->
+			<div class="container">
+				<!-- row -->
+				<div class="row">
+
+					<!-- Order Details -->
+					<div class="col-md-8 col-md-offset-2 order-details">
+						<div class="section-title text-center">
+							<h3 class="title">Hóa đơn</h3>
+						</div>
+						<div class="order-summary">
+							<div class="order-col">
+								<div><strong>Sản phẩm</strong></div>
+								<div><strong>Số tiền</strong></div>
+							</div>
+							<div class="order-products">
+								{% comment %} <div class="order-col">
+									<div>1x Product Name Goes Here</div>
+									<div>$980.00</div>
+								</div>
+								<div class="order-col">
+									<div>2x Product Name Goes Here</div>
+									<div>$980.00</div>
+								</div> {% endcomment %}
+								{% for item in order.orderdetail_set.all %}
+								<div class="order-col" style="padding: 10px">
+									<img src="{{ item.item.image.url }}" style="height: 75px">
+									<a href="{% url 'product-detail' item.item.id %}">{{item.item}}</a> x{{item.quantity}}
+									<div class="text-secondary">${{item.price}}</div>
+								</div>
+								{% endfor %}
+							</div>
+							<div class="order-col">
+								<div><strong>Phí ship</strong></div>
+								<div><strong>FREE</strong></div>
+							</div>
+							<div class="order-col">
+								<div><strong>Tổng Cộng</strong></div>
+								<div><strong class="order-total">${{order.ammount}}</strong></div>
+							</div>
+						</div>
+						<div class="payment-method">
+							<h5>Phương thức thanh toán</h5>
+							<br/>
+							<div class="input-radio">
+								<input type="radio" name="payment" id="payment-1">
+								<label for="payment-1">
+									<span></span>
+									Giao hàng nhận tiền (COD)
+								</label>
+								<div class="caption">
+									<p>Shipper đưa hàng đến tận nhà rồi mới nhận tiền.</p>
+								</div>
+							</div>
+							<div class="input-radio">
+								<input type="radio" name="payment" id="payment-2">
+								<label for="payment-2">
+									<span></span>
+									Chuyển khoản ngân hàng
+								</label>
+								<div class="caption">
+									<p>Chuyển khoản qua ngân hàng trước, rồi hàng sẽ tới nhà bạn.</p>
+								</div>
+							</div>
+						</div>
+						<div class="payment-method">
+							<h5>Địa chỉ giao hàng</h5>
+							<p>{{order.shipping_address}}</p>
+						</div>
+						{% if not order.ordered %}
+                        <div class="form-group">
+							<center><button class="primary-btn order-submit" type="submit">Thanh toan</button></center>
+						</div>
+                        {% endif %}
+					</div>
+					<!-- /Order Details -->
+				</div>
+				<!-- /row -->
+			</div>
+			<!-- /container -->
+			</form>
+		</div>
+		<!-- /SECTION -->
+
+				<!-- jQuery Plugins -->
+		<script src="{% static 'shoppingsite/js/jquery.min.js' %}"></script>
+		<script src="{% static 'shoppingsite/js/bootstrap.min.js' %}"></script>
+		<script src="{% static 'shoppingsite/js/slick.min.js' %}"></script>
+		<script src="{% static 'shoppingsite/js/nouislider.min.js' %}"></script>
+		<script src="{% static 'shoppingsite/js/jquery.zoom.min.js' %}"></script>
+		<script src="{% static 'shoppingsite/js/main.js' %}"></script>
+
+	</body>
+</html>
