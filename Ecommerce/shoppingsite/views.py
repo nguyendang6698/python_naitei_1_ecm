@@ -38,18 +38,6 @@ class IndexView(generic.View):
             return render(self.request, 'shoppingsite/index.html')
 
 def register(request):
-    # if request.method == 'POST':
-    #     form = SignupForm(request.POST)
-    #     if form.is_valid():
-    #         form.save()
-    #         username = form.cleaned_data.get('username')
-    #         messages.success(request, f'Chao mung {username}, ban la khach hang moi cua chung toi!')
-    #         return redirect('user-login')
-    #         # return HttpResponse("Thanh cong")
-    # else:
-    #     form = SignupForm()
-    # return render(request, 'user/user_register.html', {'form': form})
-    
     if request.method == 'POST':
         form = SignupForm(request.POST)
         if form.is_valid():
@@ -311,9 +299,10 @@ def remove_single_item_from_cart(request, id):
 
 class OrderSummaryView(LoginRequiredMixin, generic.View):
     login_url="/shoppingsite/login/"
+    
     def get(self, *args, **kwargs):
         try:
-            order = Order.objects.filter(customer=self.request.user).last()
+            order = Order.objects.get(customer=self.request.user, ordered=False)
             context = {
                 'order': order
             }
